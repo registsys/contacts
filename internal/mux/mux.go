@@ -2,16 +2,17 @@ package mux
 
 import (
 	"net/http"
-
-	"github.com/registsys/contacts/internal/handlers/contacts"
-	"github.com/registsys/contacts/internal/store"
 )
 
-func New() *http.ServeMux {
-	mux := http.NewServeMux()
-	store := store.NewStore()
+type Deps struct {
+	ContactCreateHandler http.HandlerFunc
+	ContactListHandler   http.HandlerFunc
+}
 
-	mux.HandleFunc("/contact", contacts.NewContactCreateHandler(store))
-	mux.HandleFunc("/contact/list", contacts.NewContactListHandler(store))
+func New(d *Deps) *http.ServeMux {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/contact", d.ContactCreateHandler)
+	mux.HandleFunc("/contact/list", d.ContactListHandler)
 	return mux
 }

@@ -9,7 +9,7 @@ import (
 
 func TestMux(t *testing.T) {
 
-	mux := New()
+	mux := New() // Если в этом конструкторе будет будут собираьтся все слои, то мы не сможе нормально писать тесты
 	if mux == nil {
 		t.Error("mux is nil")
 	}

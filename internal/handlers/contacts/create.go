@@ -10,14 +10,9 @@ import (
 
 func NewContactCreateHandler(s store.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		if r.Method != http.MethodPost {
 			http.Error(w, fmt.Sprintf("Method %s not allowed", r.Method), http.StatusMethodNotAllowed)
 			return
-		}
-
-		if r.Body != nil {
-			defer r.Body.Close()
 		}
 
 		var contact store.Contact
@@ -26,6 +21,9 @@ func NewContactCreateHandler(s store.Storage) http.HandlerFunc {
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
+		}
+		if err := r.Body.Close(); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 
 		err = s.Add(contact)
