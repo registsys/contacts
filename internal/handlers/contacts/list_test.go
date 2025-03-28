@@ -7,7 +7,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/registsys/contacts/internal/config"
 	"github.com/registsys/contacts/internal/services"
+	"github.com/registsys/contacts/internal/storage"
 )
 
 func TestListHandler(t *testing.T) {
@@ -18,7 +20,9 @@ func TestListHandler(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/contact/list", nil)
 	w := httptest.NewRecorder()
 
-	s := services.NewServices()
+	cfg := config.New("")
+	store := storage.New(cfg.PostgresDSN)
+	s := services.NewServices(store)
 	s.Contacts.Create(contacts[0])
 
 	NewContactListHandler(&s.Contacts)(w, req)

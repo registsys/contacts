@@ -2,12 +2,18 @@ package services
 
 import (
 	"testing"
+
+	"github.com/registsys/contacts/internal/config"
+	"github.com/registsys/contacts/internal/storage"
 )
 
 func TestStore(t *testing.T) {
 
+	cfg := config.New("")
+
 	t.Run("add new contact", func(t *testing.T) {
-		s := NewContactsService()
+		store := storage.New(cfg.PostgresDSN)
+		s := NewContactsService(store)
 		contact := Contact{
 			Name:  "John Doe",
 			Phone: "1234567890",
@@ -19,13 +25,16 @@ func TestStore(t *testing.T) {
 			t.Errorf("expected no error, got %v", err)
 		}
 
-		if len(s) != 1 {
-			t.Errorf("expected 1 contact, got %d", len(s))
+		items := s.List()
+
+		if len(items) != 1 {
+			t.Errorf("expected 1 contact, got %d", len(items))
 		}
 	})
 
 	t.Run("add exists contact", func(t *testing.T) {
-		s := NewContactsService()
+		store := storage.New(cfg.PostgresDSN)
+		s := NewContactsService(store)
 		contact := Contact{
 			Name:  "John Doe",
 			Phone: "1234567890",
@@ -45,13 +54,16 @@ func TestStore(t *testing.T) {
 			t.Errorf("expected error, got nil")
 		}
 
-		if len(s) != 1 {
-			t.Errorf("expected 1 contact, got %d", len(s))
+		items := s.List()
+
+		if len(items) != 1 {
+			t.Errorf("expected 1 contact, got %d", len(items))
 		}
 	})
 
 	t.Run("new contact name required", func(t *testing.T) {
-		s := NewContactsService()
+		store := storage.New(cfg.PostgresDSN)
+		s := NewContactsService(store)
 		contact := Contact{
 			Phone: "1234567890",
 			Email: "john.doe@example.com",
@@ -62,13 +74,16 @@ func TestStore(t *testing.T) {
 			t.Errorf("expected error, got nil")
 		}
 
-		if len(s) != 0 {
-			t.Errorf("expected 0 contact, got %d", len(s))
+		items := s.List()
+
+		if len(items) != 0 {
+			t.Errorf("expected 0 contact, got %d", len(items))
 		}
 	})
 
 	t.Run("new contact phone required", func(t *testing.T) {
-		s := NewContactsService()
+		store := storage.New(cfg.PostgresDSN)
+		s := NewContactsService(store)
 		contact := Contact{
 			Name:  "John Doe",
 			Email: "john.doe@example.com",
@@ -79,13 +94,16 @@ func TestStore(t *testing.T) {
 			t.Errorf("expected error, got nil")
 		}
 
-		if len(s) != 0 {
-			t.Errorf("expected 0 contact, got %d", len(s))
+		items := s.List()
+
+		if len(items) != 0 {
+			t.Errorf("expected 0 contact, got %d", len(items))
 		}
 	})
 
 	t.Run("new contact email required", func(t *testing.T) {
-		s := NewContactsService()
+		store := storage.New(cfg.PostgresDSN)
+		s := NewContactsService(store)
 		contact := Contact{
 			Name:  "John Doe",
 			Phone: "1234567890",
@@ -96,13 +114,16 @@ func TestStore(t *testing.T) {
 			t.Errorf("expected error, got nil")
 		}
 
-		if len(s) != 0 {
-			t.Errorf("expected 0 contact, got %d", len(s))
+		items := s.List()
+
+		if len(items) != 0 {
+			t.Errorf("expected 0 contact, got %d", len(items))
 		}
 	})
 
 	t.Run("contacts list", func(t *testing.T) {
-		s := NewContactsService()
+		store := storage.New(cfg.PostgresDSN)
+		s := NewContactsService(store)
 		contact1 := Contact{
 			Name:  "John Doe",
 			Phone: "1234567890",

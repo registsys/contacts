@@ -7,20 +7,18 @@ import (
 	"github.com/registsys/contacts/internal/config"
 	"github.com/registsys/contacts/internal/mux"
 	"github.com/registsys/contacts/internal/services"
+	"github.com/registsys/contacts/internal/storage"
 )
 
 func main() {
 
-	// ВАЖНО: вызов этого конструкторв должен быть здесь
-	cfg := config.New("путь к файлу")
-	if cfg.PostgresDSN != "" {
-		// TODO получаем подключение к БД
-	}
-	// если подключения к БД нет, то используюем в качестве хранилища памятьq
+	cfg := config.New("./config.yaml")
 
-	s := services.NewServices()
+	store := storage.New(cfg.PostgresDSN)
 
-	err := http.ListenAndServe(`:8080`, mux.New(s))
+	serv := services.NewServices(store)
+
+	err := http.ListenAndServe(`:8080`, mux.New(serv))
 	if err != nil {
 		log.Fatal(err)
 	}

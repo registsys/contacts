@@ -6,12 +6,16 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/registsys/contacts/internal/config"
 	"github.com/registsys/contacts/internal/services"
+	"github.com/registsys/contacts/internal/storage"
 )
 
 func TestMux(t *testing.T) {
 
-	s := services.NewServices()
+	cfg := config.New("")
+	store := storage.New(cfg.PostgresDSN)
+	s := services.NewServices(store)
 	mux := New(s)
 	if mux == nil {
 		t.Error("mux is nil")

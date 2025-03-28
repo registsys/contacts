@@ -7,14 +7,18 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/registsys/contacts/internal/config"
 	"github.com/registsys/contacts/internal/services"
+	"github.com/registsys/contacts/internal/storage"
 )
 
 func TestCreateHandler(t *testing.T) {
 
 	requestBody := `{"name":"John Doe","phone":"1234567890","email":"john.doe@example.com"}`
 
-	s := services.NewServices()
+	cfg := config.New("")
+	store := storage.New(cfg.PostgresDSN)
+	s := services.NewServices(store)
 
 	req := httptest.NewRequest(http.MethodPost, "/contact", bytes.NewReader([]byte(requestBody)))
 	w := httptest.NewRecorder()
