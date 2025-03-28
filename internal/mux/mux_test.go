@@ -5,11 +5,14 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/registsys/contacts/internal/services"
 )
 
 func TestMux(t *testing.T) {
 
-	mux := New()
+	s := services.NewServices()
+	mux := New(s)
 	if mux == nil {
 		t.Error("mux is nil")
 	}

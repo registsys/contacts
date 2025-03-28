@@ -7,21 +7,21 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/registsys/contacts/internal/store"
+	"github.com/registsys/contacts/internal/services"
 )
 
 func TestListHandler(t *testing.T) {
 	expected := `[{"name":"John Doe","phone":"1234567890","email":"john.doe@example.com"}]`
-	var contacts []store.Contact
+	var contacts []services.Contact
 	json.Unmarshal([]byte(expected), &contacts)
 
 	req := httptest.NewRequest(http.MethodGet, "/contact/list", nil)
 	w := httptest.NewRecorder()
 
-	s := store.NewStore()
-	s.Add(contacts[0])
+	s := services.NewServices()
+	s.Contacts.Create(contacts[0])
 
-	NewContactListHandler(s)(w, req)
+	NewContactListHandler(&s.Contacts)(w, req)
 
 	resp := w.Result()
 

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/registsys/contacts/internal/store"
+	"github.com/registsys/contacts/internal/services"
 )
 
-func NewContactListHandler(s store.Storage) http.HandlerFunc {
+func NewContactListHandler(s *services.ContactsService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		if r.Method != http.MethodGet {

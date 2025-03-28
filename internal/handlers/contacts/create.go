@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/registsys/contacts/internal/store"
+	"github.com/registsys/contacts/internal/services"
 )
 
-func NewContactCreateHandler(s store.Storage) http.HandlerFunc {
+func NewContactCreateHandler(s *services.ContactsService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		if r.Method != http.MethodPost {
@@ -16,19 +16,18 @@ func NewContactCreateHandler(s store.Storage) http.HandlerFunc {
 			return
 		}
 
-		if r.Body != nil {
-			defer r.Body.Close()
-		}
-
-		var contact store.Contact
+		var contact services.Contact
 
 		err := json.NewDecoder(r.Body).Decode(&contact)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		if err := r.Body.Close(); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 
-		err = s.Add(contact)
+		err = s.Create(contact)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return

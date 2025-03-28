@@ -7,19 +7,19 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/registsys/contacts/internal/store"
+	"github.com/registsys/contacts/internal/services"
 )
 
 func TestCreateHandler(t *testing.T) {
 
 	requestBody := `{"name":"John Doe","phone":"1234567890","email":"john.doe@example.com"}`
 
-	s := store.NewStore()
+	s := services.NewServices()
 
 	req := httptest.NewRequest(http.MethodPost, "/contact", bytes.NewReader([]byte(requestBody)))
 	w := httptest.NewRecorder()
 
-	NewContactCreateHandler(s)(w, req)
+	NewContactCreateHandler(&s.Contacts)(w, req)
 
 	resp := w.Result()
 
@@ -40,7 +40,7 @@ func TestCreateHandler(t *testing.T) {
 		t.Errorf("Expected body %q, got %q", requestBody, string(body))
 	}
 
-	contacts := s.List()
+	contacts := s.Contacts.List()
 	if len(contacts) != 1 {
 		t.Errorf("Expected 1 contact, got %d", len(contacts))
 	}

@@ -1,15 +1,19 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/registsys/contacts/internal/mux"
+	"github.com/registsys/contacts/internal/services"
 )
 
 func main() {
 
-	err := http.ListenAndServe(`:8080`, mux.New())
+	s := services.NewServices()
+
+	err := http.ListenAndServe(`:8080`, mux.New(s))
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }
