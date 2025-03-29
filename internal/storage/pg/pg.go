@@ -2,8 +2,14 @@ package pg
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/registsys/contacts/internal/storage"
+)
+
+var (
+	ErrNotConfigured       = fmt.Errorf("dsn not provided")
+	ErrImpoperlyConfigured = fmt.Errorf("could not connect to db")
 )
 
 type (
@@ -15,9 +21,13 @@ type (
 )
 
 func New(dsn string) (*pgStore, error) {
+	if dsn == "" {
+		return nil, ErrNotConfigured
+	}
+
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w\n\t%v", ErrImpoperlyConfigured, err)
 	}
 	return &pgStore{db: db}, nil
 }

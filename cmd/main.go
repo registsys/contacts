@@ -21,8 +21,12 @@ func main() {
 
 	store, err := pg.New(cfg.PostgresDSN)
 	if err != nil {
-		fmt.Printf("failed to create pg store: %v\nusing inmemory store\n", err)
-		store = inmemory.New()
+		if err == pg.ErrNotConfigured {
+			fmt.Printf("failed to create pg store: %v\nusing inmemory store\n", err)
+			store = inmemory.New()
+		} else {
+			log.Fatal(err)
+		}
 	}
 
 	serv := services.NewServices(store)
