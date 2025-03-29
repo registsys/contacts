@@ -6,14 +6,22 @@ import (
 	"github.com/registsys/contacts/internal/storage"
 )
 
-type Contact = storage.Contact
+type (
+	Contact = storage.Contact
 
-type ContactsService struct {
-	storage storage.StorageI
-}
+	ContactPublisher func(contact Contact) error
 
-func NewContactsService(s storage.StorageI) ContactsService {
-	return ContactsService{s}
+	ContactsService struct {
+		storage   storage.StorageI
+		sendEvent ContactPublisher
+	}
+)
+
+func NewContactsService(s storage.StorageI, sendEvent ContactPublisher) ContactsService {
+	return ContactsService{
+		storage:   s,
+		sendEvent: sendEvent,
+	}
 }
 
 func (s ContactsService) Create(contact Contact) error {
@@ -30,7 +38,17 @@ func (s ContactsService) Create(contact Contact) error {
 		return fmt.Errorf("email is required")
 	}
 
-	return s.storage.Create(contact)
+	err := s.storage.Create(contact)
+	if err != nil {
+		return fmt.Errorf("failed to create contact: %w", err)
+	}
+
+	err = s.sendEvent(contact)
+	if err != nil {
+		return fmt.Errorf("failed to send event: %w", err)
+	}
+
+	return nil
 }
 
 func (s ContactsService) List() []Contact {
