@@ -6,8 +6,8 @@ type Services struct {
 	Contacts ContactsService
 }
 
-func NewServices(storage storage.StorageI) *Services {
+func NewServices(storage storage.StorageI, sendEvent ContactPublisher) *Services {
 	return &Services{
-		Contacts: NewContactsService(storage),
+		Contacts: NewContactsService(storage, sendEvent),
 	}
 }

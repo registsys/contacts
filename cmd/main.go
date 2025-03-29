@@ -29,10 +29,15 @@ func main() {
 		}
 	}
 
-	serv := services.NewServices(store)
+	serv := services.NewServices(store, onContactSaved)
 
 	err = http.ListenAndServe(`:8080`, mux.New(serv))
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func onContactSaved(contact services.Contact) error {
+	fmt.Printf("from contact publisher cb. contact created: %v\n", contact)
+	return nil
 }
