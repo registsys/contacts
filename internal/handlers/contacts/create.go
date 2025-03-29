@@ -8,6 +8,8 @@ import (
 	"github.com/registsys/contacts/internal/services"
 )
 
+// TODO для того что бы можно было протестировать хендлер, нужно объявить здесь свой интефейс
+// и передать его в качестве аргумента вместо *services.ContactsService
 func NewContactCreateHandler(s *services.ContactsService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
