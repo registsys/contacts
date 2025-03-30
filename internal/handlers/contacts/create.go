@@ -29,7 +29,7 @@ func (h *ContactsHandler) ContactCreateHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	err = h.services.ContactCreate(contact)
+	err = h.Services.ContactCreate(contact)
 	if err != nil {
 		handlers.ErrBadRequest(w, r, err.Error())
 		return

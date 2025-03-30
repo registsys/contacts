@@ -14,7 +14,7 @@ func (h *ContactsHandler) ContactListHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	contacts := h.services.ContactList()
+	contacts := h.Services.ContactList()
 
 	response, err := json.Marshal(contacts)
 	if err != nil {

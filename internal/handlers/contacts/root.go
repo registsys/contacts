@@ -8,13 +8,18 @@ import (
 )
 
 type ContactsHandler struct {
-	services *services.Services
+	Services ServicesI
 	Handler  http.Handler
 }
 
-func NewContactsHandler(s *services.Services) *ContactsHandler {
+type ServicesI interface {
+	ContactCreate(c services.Contact) error
+	ContactList() []services.Contact
+}
+
+func NewContactsHandler(s ServicesI) *ContactsHandler {
 	return &ContactsHandler{
-		services: s,
+		Services: s,
 	}
 }
 
