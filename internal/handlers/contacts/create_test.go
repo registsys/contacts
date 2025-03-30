@@ -11,7 +11,7 @@ import (
 // - моки можно написать свои, но лучше заюзать готовый toolkit, посмотри как работают с https://github.com/stretchr/testify
 
 // TestNewContactCreateHandler_201Created тестирует успешный сценарий
-func TestNewContactCreateHandler_201Created(t *testing.T) {
+func TestContactCreateHandler_201Created(t *testing.T) {
 
 	// TODO мокаем поведение метода Create таким образом что бы мы получили успешний результат
 
@@ -21,7 +21,17 @@ func TestNewContactCreateHandler_201Created(t *testing.T) {
 // в случае когда используется не валидный http метод
 func TestNewContactCreateHandler_MethodNotAllowed(t *testing.T) {
 
-	// TODO делаем запрос с невалидным http методом и ожидаем получение соотвествующей ошибки
+	// for _, method := range []string{http.MethodPut, http.MethodPatch, http.MethodDelete} {
+	// 	request := httptest.NewRequest(method, "/contacts", nil)
+	// 	response := httptest.NewRecorder()
+	// 	contacts.ContactCreateHandler(response, request)
+
+	// 	result := response.Result()
+
+	// 	if result.StatusCode != http.StatusMethodNotAllowed {
+	// 		t.Errorf("got stattus code %d, want stattus code %d", result.StatusCode, http.StatusMethodNotAllowed)
+	// 	}
+	// }
 
 }
 

@@ -8,9 +8,12 @@ import (
 )
 
 func New(s *services.Services) *http.ServeMux {
+
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/contact", contacts.NewContactCreateHandler(&s.Contacts))
-	mux.HandleFunc("/contact/list", contacts.NewContactListHandler(&s.Contacts))
+	contactsH := contacts.NewContactsHandler(s)
+
+	mux.HandleFunc("/contacts", contactsH.ContactsHandler)
+
 	return mux
 }

@@ -11,20 +11,20 @@ type (
 
 	ContactPublisher func(contact Contact) error
 
-	ContactsService struct {
-		storage   storage.StorageI
-		sendEvent ContactPublisher
+	Services struct {
+		store            storage.StorageI
+		onContactCreated ContactPublisher
 	}
 )
 
-func NewContactsService(s storage.StorageI, sendEvent ContactPublisher) ContactsService {
-	return ContactsService{
-		storage:   s,
-		sendEvent: sendEvent,
+func NewServices(store storage.StorageI, onContactCreated ContactPublisher) *Services {
+	return &Services{
+		store:            store,
+		onContactCreated: onContactCreated,
 	}
 }
 
-func (s ContactsService) Create(contact Contact) error {
+func (s Services) ContactCreate(contact Contact) error {
 
 	if contact.Name == "" {
 		return fmt.Errorf("name is required")
@@ -38,12 +38,12 @@ func (s ContactsService) Create(contact Contact) error {
 		return fmt.Errorf("email is required")
 	}
 
-	err := s.storage.Create(contact)
+	err := s.store.Create(contact)
 	if err != nil {
 		return fmt.Errorf("failed to create contact: %w", err)
 	}
 
-	err = s.sendEvent(contact)
+	err = s.onContactCreated(contact)
 	if err != nil {
 		return fmt.Errorf("failed to send event: %w", err)
 	}
@@ -51,6 +51,6 @@ func (s ContactsService) Create(contact Contact) error {
 	return nil
 }
 
-func (s ContactsService) List() []Contact {
-	return s.storage.List()
+func (s Services) ContactList() []Contact {
+	return s.store.List()
 }
