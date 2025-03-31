@@ -3,6 +3,7 @@ package inmemory
 import (
 	"fmt"
 
+	"github.com/registsys/contacts/internal/errors"
 	"github.com/registsys/contacts/internal/storage"
 )
 
@@ -20,7 +21,7 @@ func (s inMemoryStorage) Create(contact Contact) error {
 	pk := contact.GetPK()
 
 	if _, ok := s[pk]; ok {
-		return fmt.Errorf("contact with primary key %s already exists", pk)
+		return fmt.Errorf("%w: contact with primary key %q already exists", errors.ErrObjectExists, pk)
 	}
 
 	s[pk] = contact
