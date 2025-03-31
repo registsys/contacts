@@ -2,30 +2,27 @@ package contacts
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
-	"github.com/registsys/contacts/internal/services"
+	"github.com/registsys/contacts/internal/handlers"
 )
 
-func NewContactListHandler(s *services.ContactsService) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (h *ContactsHandler) ContactListHandler(w http.ResponseWriter, r *http.Request) {
 
-		if r.Method != http.MethodGet {
-			http.Error(w, fmt.Sprintf("Method %s not allowed", r.Method), http.StatusMethodNotAllowed)
-			return
-		}
-
-		contacts := s.List()
-
-		response, err := json.Marshal(contacts)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(response)
+	if r.Method != http.MethodGet {
+		handlers.ErrMethodNotAllowed(w, r)
+		return
 	}
+
+	contacts := h.Services.ContactList()
+
+	response, err := json.Marshal(contacts)
+	if err != nil {
+		handlers.ErrInternalServerError(w, r, err.Error())
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
 }
