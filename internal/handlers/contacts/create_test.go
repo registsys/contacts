@@ -2,6 +2,7 @@ package contacts_test
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -17,8 +18,8 @@ type MockedServices struct {
 }
 
 func (m *MockedServices) ContactCreate(c services.Contact) error {
-	m.Called(c)
-	return nil
+	args := m.Called(c)
+	return args.Error(0)
 }
 
 func (m *MockedServices) ContactList() []services.Contact {
@@ -81,17 +82,23 @@ func TestContactCreateHandler_201Created(t *testing.T) {
 // в случае когда используется не валидный http метод
 func TestNewContactCreateHandler_MethodNotAllowed(t *testing.T) {
 
-	// for _, method := range []string{http.MethodPut, http.MethodPatch, http.MethodDelete} {
-	// 	request := httptest.NewRequest(method, "/contacts", nil)
-	// 	response := httptest.NewRecorder()
-	// 	contacts.ContactCreateHandler(response, request)
+	s := new(MockedServices)
 
-	// 	result := response.Result()
+	h := &contacts.ContactsHandler{
+		Services: s,
+	}
 
-	// 	if result.StatusCode != http.StatusMethodNotAllowed {
-	// 		t.Errorf("got stattus code %d, want stattus code %d", result.StatusCode, http.StatusMethodNotAllowed)
-	// 	}
-	// }
+	for _, method := range []string{http.MethodPut, http.MethodPatch, http.MethodDelete} {
+		request := httptest.NewRequest(method, "/contacts", nil)
+		response := httptest.NewRecorder()
+		h.ContactCreateHandler(response, request)
+
+		result := response.Result()
+
+		if result.StatusCode != http.StatusMethodNotAllowed {
+			t.Errorf("got stattus code %d, want stattus code %d", result.StatusCode, http.StatusMethodNotAllowed)
+		}
+	}
 
 }
 
@@ -100,5 +107,28 @@ func TestNewContactCreateHandler_InternalServerError(t *testing.T) {
 
 	// TODO мокаем поведение метода Create таким образом что он вернул ошбику, в данном случае без разницы какую
 	// и ожидаетм получить 500 ошибку
+	contact := `{}`
+
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest(http.MethodPost, "/contacts", bytes.NewReader([]byte(contact)))
+
+	// TODO мокаем поведение метода Create таким образом что бы мы получили успешний результат
+	s := new(MockedServices)
+
+	h := &contacts.ContactsHandler{
+		Services: s,
+	}
+
+	s.On("ContactCreate", mock.Anything).Return(errors.New("error"))
+
+	h.ContactCreateHandler(w, r)
+
+	s.AssertExpectations(t)
+
+	result := w.Result()
+
+	if result.StatusCode != http.StatusInternalServerError {
+		t.Errorf("got status code %d, want status code %d", result.StatusCode, http.StatusInternalServerError)
+	}
 
 }

@@ -31,7 +31,7 @@ func (h *ContactsHandler) ContactCreateHandler(w http.ResponseWriter, r *http.Re
 
 	err = h.Services.ContactCreate(contact)
 	if err != nil {
-		handlers.ErrBadRequest(w, r, err.Error())
+		handlers.ErrInternalServerError(w, r, err.Error())
 		return
 	}
 
