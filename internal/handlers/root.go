@@ -26,3 +26,10 @@ func ErrBadRequest(w http.ResponseWriter, r *http.Request, err string) {
 func ErrNotFound(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not found", http.StatusNotFound)
 }
+
+func ErrObjectExists(w http.ResponseWriter, r *http.Request, err string) {
+	if err == "" {
+		err = "Object already exists"
+	}
+	http.Error(w, err, http.StatusConflict)
+}

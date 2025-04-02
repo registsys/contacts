@@ -2,8 +2,10 @@ package contacts
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
+	errs "github.com/registsys/contacts/internal/errors"
 	"github.com/registsys/contacts/internal/handlers"
 	"github.com/registsys/contacts/internal/services"
 )
@@ -31,6 +33,10 @@ func (h *ContactsHandler) ContactCreateHandler(w http.ResponseWriter, r *http.Re
 
 	err = h.Services.ContactCreate(contact)
 	if err != nil {
+		if errors.Is(err, errs.ErrObjectExists) {
+			handlers.ErrObjectExists(w, r, err.Error())
+			return
+		}
 		handlers.ErrInternalServerError(w, r, err.Error())
 		return
 	}
