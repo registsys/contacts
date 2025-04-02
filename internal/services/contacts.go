@@ -40,7 +40,7 @@ func (s Services) ContactCreate(contact Contact) error {
 
 	err := s.store.Create(contact)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create contact: %w", err)
 	}
 
 	err = s.onContactCreated(contact)

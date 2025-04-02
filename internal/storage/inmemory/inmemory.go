@@ -21,7 +21,7 @@ func (s inMemoryStorage) Create(contact Contact) error {
 	pk := contact.GetPK()
 
 	if _, ok := s[pk]; ok {
-		return fmt.Errorf("%w: contact with primary key %q already exists", errors.ErrObjectExists, pk)
+		return fmt.Errorf("contact with primary key %q already exists: %w", pk, errors.ErrObjectExists)
 	}
 
 	s[pk] = contact
